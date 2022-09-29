@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './api/users/users.module';
 import { AuthModule } from './api/auth/auth.module';
+import { FeedsModule } from './api/feeds/feeds.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AuthModule } from './api/auth/auth.module';
     }),
     UsersModule,
     AuthModule,
+    FeedsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

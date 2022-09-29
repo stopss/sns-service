@@ -1,8 +1,11 @@
+import { FeedsEntity } from 'src/api/feeds/entities/feed.entity';
+import { LikesEntity } from 'src/api/feeds/entities/like.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -29,4 +32,10 @@ export class UserEntity {
 
   @DeleteDateColumn()
   deleteAt: Date;
+
+  @OneToMany(() => FeedsEntity, (feed) => feed.writer)
+  feed: FeedsEntity[];
+
+  @OneToMany(() => LikesEntity, (like) => like.userId)
+  like: LikesEntity[];
 }
