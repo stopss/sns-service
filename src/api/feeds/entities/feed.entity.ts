@@ -45,7 +45,7 @@ export class FeedsEntity {
   deleteAt: Date;
 
   @ManyToOne(() => UserEntity, (user) => user.feed)
-  @JoinColumn([{ name: 'writer', referencedColumnName: 'id' }])
+  @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
   user: UserEntity;
 
   @OneToMany(() => LikesEntity, (like) => like.feedId)
