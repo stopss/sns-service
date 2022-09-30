@@ -10,7 +10,8 @@ export class FeedsController {
   @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() feedInputDto: FeedInputDto, @Req() req): Promise<any> {
+    const userId = req.user.userId;
     const userName = req.user.username;
-    return this.feedsService.createFeed(feedInputDto, userName);
+    return this.feedsService.createFeed(feedInputDto, userId, userName);
   }
 }

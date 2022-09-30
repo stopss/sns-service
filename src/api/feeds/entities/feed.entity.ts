@@ -18,12 +18,15 @@ export class FeedsEntity {
   id: number;
 
   @Column()
+  userId: number;
+
+  @Column()
   title: string;
 
   @Column()
   content: string;
 
-  @Column()
+  @Column({ nullable: true })
   hashtags: string;
 
   @Column()
@@ -34,6 +37,9 @@ export class FeedsEntity {
 
   @Column()
   likeCount: number;
+
+  @Column({ default: false })
+  isDeleted: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
