@@ -1,4 +1,12 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Param,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guards';
 import { FeedInputDto } from './dto/feed.input.dto';
 import { FeedsService } from './feeds.service';
@@ -13,5 +21,17 @@ export class FeedsController {
     const userId = req.user.userId;
     const userName = req.user.username;
     return this.feedsService.createFeed(feedInputDto, userId, userName);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id')
+  update(
+    @Body() feedInputDto: FeedInputDto,
+    @Req() req,
+    @Param('id') id: number,
+  ): Promise<any> {
+    const userId = req.user.userId;
+
+    return this.feedsService.updateFeed(feedInputDto, userId, id);
   }
 }
