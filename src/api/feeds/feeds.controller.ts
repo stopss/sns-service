@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Param,
   Patch,
   Post,
@@ -33,5 +34,12 @@ export class FeedsController {
     const userId = req.user.userId;
 
     return this.feedsService.updateFeed(feedInputDto, userId, id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  delete(@Req() req, @Param('id') id: number): Promise<any> {
+    const userId = req.user.userId;
+    return this.feedsService.deleteFeed(userId, id);
   }
 }

@@ -25,17 +25,6 @@ export class FeedsService {
       where: { id: feedId },
     });
 
-    // if (!existFeed) {
-    //   throw new HttpException(
-    //     {
-    //       success: false,
-    //       statusCode: HttpStatus.NOT_FOUND,
-    //       error: '해당 게시글의 ID를 찾을 수 없습니다.',
-    //       timestamp: new Date().toISOString(),
-    //     },
-    //     HttpStatus.NOT_FOUND,
-    //   );
-    // }
     return existFeed;
   }
 
@@ -92,7 +81,7 @@ export class FeedsService {
    * @param {feedInputDto} feedInputDto title, content, hashtags @body로 수정된 값
    * @param {number} userId 사용자의 id
    * @param {number} feedId 게시글의 id
-   * @returns 
+   * @returns
    */
   async updateFeed(
     feedInputDto: FeedInputDto,
@@ -114,15 +103,12 @@ export class FeedsService {
 
       // 작성자만 게시글 수정이 가능
       if (feed.userId !== userId) {
-        throw new HttpException(
-          {
-            success: false,
-            statusCode: HttpStatus.FORBIDDEN,
-            error: '게시글 수정 권한이 없습니다.',
-            timestamp: new Date().toISOString(),
-          },
-          HttpStatus.FORBIDDEN,
-        );
+        return Object.assign({
+          success: false,
+          statusCode: HttpStatus.FORBIDDEN,
+          error: '게시글 수정 권한이 없습니다.',
+          timestamp: new Date().toISOString(),
+        });
       }
 
       await this.feedsRepository.update({ id: feedId }, feedInputDto);
@@ -136,6 +122,58 @@ export class FeedsService {
         statusCode: HttpStatus.OK,
         data: { updateData },
         message: '게시글이 수정되었습니다.',
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      throw new HttpException(
+        {
+          success: false,
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: '알 수 없는 오류가 발생했습니다.',
+          timestamp: new Date().toISOString(),
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  /**
+   * 게시글 삭제 API
+   * @param {number} userId 사용자 id
+   * @param {number} feedId 게시글 id
+   * @returns 
+   */
+  async deleteFeed(userId: number, feedId: number): Promise<any> {
+    try {
+      const feed = await this.findFeedById(feedId);
+
+      // 게시글 ID를 찾을 수 없는 경우
+      if (!feed) {
+        return Object.assign({
+          success: false,
+          statusCode: HttpStatus.NOT_FOUND,
+          error: '해당 게시글의 ID를 찾을 수 없습니다.',
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      // 작성자만 게시글 삭제가 가능
+      if (feed.userId !== userId) {
+        return Object.assign({
+          success: false,
+          statusCode: HttpStatus.FORBIDDEN,
+          error: '게시글 삭제 권한이 없습니다.',
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      await this.feedsRepository.update({ id: feedId }, { isDeleted: true });
+      await this.feedsRepository.softDelete({ id: feedId });
+
+      return Object.assign({
+        success: true,
+        statusCode: HttpStatus.OK,
+        message: '게시글이 삭제되었습니다.',
         timestamp: new Date().toISOString(),
       });
     } catch (error) {
