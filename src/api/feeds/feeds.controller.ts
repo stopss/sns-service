@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -42,4 +43,12 @@ export class FeedsController {
     const userId = req.user.userId;
     return this.feedsService.deleteFeed(userId, id);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Put(':id')
+  restore(@Req() req, @Param('id') id: number): Promise<any> {
+    const userId = req.user.userId;
+    return this.feedsService.restoreFeed(userId, id);
+  }
+
 }
