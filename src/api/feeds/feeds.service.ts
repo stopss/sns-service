@@ -1,9 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FeedInputDto } from './dto/feed.input.dto';
@@ -243,7 +238,7 @@ export class FeedsService {
   /**
    * 게시글 상세보기 API
    * @param {number} feedId 게시글 id
-   * @returns 
+   * @returns
    */
   async detailFeed(feedId: number): Promise<any> {
     try {
@@ -295,9 +290,9 @@ export class FeedsService {
    * @param {boolean} like 게시글 좋아요 true/false
    * @param {number} userId 사용자 id
    * @param {number} feedId 게시글 id
-   * @returns 
+   * @returns
    */
-  async likeFeed(like: boolean, userId: number, feedId: number): Promise<any> {
+  async likeFeed(userId: number, feedId: number): Promise<any> {
     try {
       const existLike = await this.likesRepository.findOne({
         where: { feedId, userId },

@@ -59,12 +59,8 @@ export class FeedsController {
 
   @UseGuards(JwtAuthGuard)
   @Put(':id/like')
-  like(
-    @Param('id') id: number,
-    @Req() req,
-    @Body('like') like: boolean,
-  ): Promise<any> {
+  like(@Param('id') id: number, @Req() req): Promise<any> {
     const userId = req.user.userId;
-    return this.feedsService.likeFeed(like, userId, id);
+    return this.feedsService.likeFeed(userId, id);
   }
 }
