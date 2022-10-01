@@ -240,13 +240,17 @@ export class FeedsService {
     }
   }
 
-  // 게시글 상세보기
+  /**
+   * 게시글 상세보기 API
+   * @param {number} feedId 게시글 id
+   * @returns 
+   */
   async detailFeed(feedId: number): Promise<any> {
     try {
       const feed = await this.feedsRepository.findOne({
         where: { id: feedId },
       });
-  
+
       // 게시글 ID를 찾을 수 없는 경우
       if (!feed) {
         return Object.assign({
@@ -271,6 +275,64 @@ export class FeedsService {
         statusCode: HttpStatus.OK,
         data: { result },
         message: '게시글 보기가 완료되었습니다.',
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      throw new HttpException(
+        {
+          success: false,
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: '알 수 없는 오류가 발생했습니다.',
+          timestamp: new Date().toISOString(),
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  /**
+   * 게시글 좋아요 API
+   * @param {boolean} like 게시글 좋아요 true/false
+   * @param {number} userId 사용자 id
+   * @param {number} feedId 게시글 id
+   * @returns 
+   */
+  async likeFeed(like: boolean, userId: number, feedId: number): Promise<any> {
+    try {
+      const existLike = await this.likesRepository.findOne({
+        where: { feedId, userId },
+      });
+
+      if (!existLike) {
+        const data = this.likesRepository.create({
+          feedId,
+          userId,
+          isLike: true,
+        });
+
+        await this.likesRepository.save(data);
+      } else {
+        if (existLike.isLike)
+          await this.likesRepository.update(
+            { id: existLike.id },
+            { isLike: false },
+          );
+        else
+          await this.likesRepository.update(
+            { id: existLike.id },
+            { isLike: true },
+          );
+      }
+
+      const data = await this.likesRepository.findOne({
+        where: { feedId, userId },
+      });
+
+      return Object.assign({
+        success: true,
+        statusCode: HttpStatus.OK,
+        data: { like: data.isLike },
+        message: `좋아요 값이 ${data.isLike}입니다.`,
         timestamp: new Date().toISOString(),
       });
     } catch (error) {

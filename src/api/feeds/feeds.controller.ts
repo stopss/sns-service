@@ -57,4 +57,14 @@ export class FeedsController {
     return this.feedsService.detailFeed(id);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Put(':id/like')
+  like(
+    @Param('id') id: number,
+    @Req() req,
+    @Body('like') like: boolean,
+  ): Promise<any> {
+    const userId = req.user.userId;
+    return this.feedsService.likeFeed(like, userId, id);
+  }
 }
