@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Patch,
   Post,
@@ -49,6 +50,11 @@ export class FeedsController {
   restore(@Req() req, @Param('id') id: number): Promise<any> {
     const userId = req.user.userId;
     return this.feedsService.restoreFeed(userId, id);
+  }
+
+  @Get(':id')
+  detail(@Param('id') id: number): Promise<any> {
+    return this.feedsService.detailFeed(id);
   }
 
 }

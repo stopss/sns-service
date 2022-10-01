@@ -21,19 +21,6 @@ export class FeedsService {
   ) {}
 
   /**
-   * ID에 맞는 게시글 찾기
-   * @param {number} feedId 게시글 id
-   * @returns
-   */
-  async findFeedById(feedId: number) {
-    const existFeed = await this.feedsRepository.findOne({
-      where: { id: feedId },
-    });
-
-    return existFeed;
-  }
-
-  /**
    * 게시글 생성 API
    * @param {feedInputDto} feedInputDto  title, content, hashtags @body로 입력된 값
    * @param {number} userId  사용자의 id
@@ -94,7 +81,9 @@ export class FeedsService {
     feedId: number,
   ): Promise<any> {
     try {
-      const feed = await this.findFeedById(feedId);
+      const feed = await this.feedsRepository.findOne({
+        where: { id: feedId },
+      });
 
       // 게시글 ID를 찾을 수 없는 경우
       if (!feed) {
@@ -116,7 +105,10 @@ export class FeedsService {
         });
       }
 
-      const result = await this.feedsRepository.update({ id: feedId }, feedInputDto);
+      const result = await this.feedsRepository.update(
+        { id: feedId },
+        feedInputDto,
+      );
 
       const updateData = await this.feedsRepository.findOne({
         where: { id: feedId },
@@ -150,7 +142,9 @@ export class FeedsService {
    */
   async deleteFeed(userId: number, feedId: number): Promise<any> {
     try {
-      const feed = await this.findFeedById(feedId);
+      const feed = await this.feedsRepository.findOne({
+        where: { id: feedId },
+      });
 
       // 게시글 ID를 찾을 수 없는 경우
       if (!feed) {
@@ -197,7 +191,7 @@ export class FeedsService {
    * 게시글 복구 API
    * @param {number} userId 사용자 id
    * @param {number} feedId 게시글 id
-   * @returns 
+   * @returns
    */
   async restoreFeed(userId: number, feedId: number): Promise<any> {
     try {
@@ -231,6 +225,52 @@ export class FeedsService {
         success: result.affected ? true : false,
         statusCode: HttpStatus.OK,
         message: '게시글이 복구되었습니다.',
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      throw new HttpException(
+        {
+          success: false,
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: '알 수 없는 오류가 발생했습니다.',
+          timestamp: new Date().toISOString(),
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  // 게시글 상세보기
+  async detailFeed(feedId: number): Promise<any> {
+    try {
+      const feed = await this.feedsRepository.findOne({
+        where: { id: feedId },
+      });
+  
+      // 게시글 ID를 찾을 수 없는 경우
+      if (!feed) {
+        return Object.assign({
+          success: false,
+          statusCode: HttpStatus.NOT_FOUND,
+          error: '해당 게시글의 ID를 찾을 수 없습니다.',
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      await this.feedsRepository.update(
+        { id: feedId },
+        { viewCount: feed.viewCount + 1 },
+      );
+
+      const result = await this.feedsRepository.findOne({
+        where: { id: feedId },
+      });
+
+      return Object.assign({
+        success: true,
+        statusCode: HttpStatus.OK,
+        data: { result },
+        message: '게시글 보기가 완료되었습니다.',
         timestamp: new Date().toISOString(),
       });
     } catch (error) {
