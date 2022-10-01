@@ -256,9 +256,14 @@ export class FeedsService {
         });
       }
 
+      // 좋아요 수
+      const [likeList, count] = await this.likesRepository.findAndCount({
+        where: { feedId, isLike: true },
+      });
+
       await this.feedsRepository.update(
         { id: feedId },
-        { viewCount: feed.viewCount + 1 },
+        { viewCount: feed.viewCount + 1, likeCount: count },
       );
 
       const result = await this.feedsRepository.findOne({
