@@ -38,9 +38,6 @@ export class FeedsEntity {
   @Column()
   likeCount: number;
 
-  @Column({ default: false })
-  isDeleted: boolean;
-
   @CreateDateColumn()
   createdAt: Date;
 

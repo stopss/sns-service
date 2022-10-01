@@ -141,7 +141,7 @@ export class FeedsService {
    * 게시글 삭제 API
    * @param {number} userId 사용자 id
    * @param {number} feedId 게시글 id
-   * @returns 
+   * @returns
    */
   async deleteFeed(userId: number, feedId: number): Promise<any> {
     try {
@@ -167,7 +167,6 @@ export class FeedsService {
         });
       }
 
-      await this.feedsRepository.update({ id: feedId }, { isDeleted: true });
       await this.feedsRepository.softDelete({ id: feedId });
 
       return Object.assign({
