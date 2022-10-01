@@ -1,6 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
+import {
+  FeedFindOptions,
+  OrderOption,
+  SortOption,
+} from './dto/feed.find.options';
 import { FeedInputDto } from './dto/feed.input.dto';
 import { FeedsEntity } from './entities/feed.entity';
 import { LikesEntity } from './entities/like.entity';
@@ -346,5 +351,49 @@ export class FeedsService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  // 게시글 전체 목록
+  async findList({ ...feedFindOptions }: FeedFindOptions): Promise<any> {
+    let { order, sort, page, pageCount } = feedFindOptions;
+    const { search, filter } = feedFindOptions;
+
+    const db = this.feedsRepository.createQueryBuilder('feed');
+
+    // default 값
+    order = order || OrderOption.DESC;
+    sort = sort || SortOption.CREATEDAT;
+    page = page || 1;
+    pageCount = pageCount || 10;
+
+    if (search) {
+      db.andWhere(
+        new Brackets((db) => {
+          db.orWhere(`feed.title like '%${search}%'`);
+          db.orWhere(`feed.content like '%${search}%'`);
+        }),
+      );
+    }
+
+    if (filter) {
+      const hashTags = filter.split(',').map((el) => {
+        return '#' + el;
+      });
+      db.andWhere(
+        new Brackets((qb) => {
+          hashTags.forEach((el) => {
+            qb.andWhere(`feed.hashTags like '%${el}%'`);
+          });
+        }),
+      );
+    }
+
+    const feedList = await db
+      .orderBy(`feed.${sort}`, order)
+      .take(pageCount)
+      .skip((page - 1) * pageCount)
+      .getMany();
+
+    return feedList;
   }
 }

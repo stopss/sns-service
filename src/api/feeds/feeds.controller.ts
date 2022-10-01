@@ -7,10 +7,16 @@ import {
   Patch,
   Post,
   Put,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guards';
+import {
+  FeedFindOptions,
+  OrderOption,
+  SortOption,
+} from './dto/feed.find.options';
 import { FeedInputDto } from './dto/feed.input.dto';
 import { FeedsService } from './feeds.service';
 
@@ -62,5 +68,26 @@ export class FeedsController {
   like(@Param('id') id: number, @Req() req): Promise<any> {
     const userId = req.user.userId;
     return this.feedsService.likeFeed(userId, id);
+  }
+
+  @Get()
+  findList(
+    @Query('search') search?: string,
+    @Query('order') order?: OrderOption,
+    @Query('sort') sort?: SortOption,
+    @Query('filter') filter?: string,
+    @Query('page') page?: number,
+    @Query('pageCount') pageCount?: number,
+  ): Promise<any> {
+    const feedFindOptions: FeedFindOptions = {
+      search,
+      order,
+      sort,
+      filter,
+      page,
+      pageCount,
+    };
+
+    return this.feedsService.findList({...feedFindOptions});
   }
 }
