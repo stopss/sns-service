@@ -28,10 +28,10 @@ export class UserEntity {
   createdAt: Date;
 
   @UpdateDateColumn()
-  updateAt: Date;
+  updatedAt: Date;
 
   @DeleteDateColumn()
-  deleteAt: Date;
+  deletedAt: Date;
 
   @OneToMany(() => FeedsEntity, (feed) => feed.writer)
   feed: FeedsEntity[];

@@ -42,10 +42,10 @@ export class FeedsEntity {
   createdAt: Date;
 
   @UpdateDateColumn()
-  updateAt: Date;
+  updatedAt: Date;
 
   @DeleteDateColumn()
-  deleteAt: Date;
+  deletedAt: Date;
 
   @ManyToOne(() => UserEntity, (user) => user.feed)
   @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])

@@ -29,10 +29,10 @@ export class LikesEntity {
   createdAt: Date;
 
   @UpdateDateColumn()
-  updateAt: Date;
+  updatedAt: Date;
 
   @DeleteDateColumn()
-  deleteAt: Date;
+  deletedAt: Date;
 
   @ManyToOne(() => UserEntity, (user) => user.like)
   @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
