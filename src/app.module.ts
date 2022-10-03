@@ -13,7 +13,7 @@ import { FeedsModule } from './api/feeds/feeds.module';
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.HOST,
-      port: 3306,
+      port: +process.env.PORT,
       username: process.env.USERNAME,
       password: process.env.PASSWORD,
       database: process.env.DATABASE,
